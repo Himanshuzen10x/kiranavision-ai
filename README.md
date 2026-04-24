@@ -1,4 +1,4 @@
-<img width="1299" height="665" alt="Screenshot 2026-04-24 at 7 31 01 PM" src="https://github.com/user-attachments/assets/6930632b-52c3-4d7d-8858-6c06c6b58dce" /># KiranaVision AI — Alternative Credit Scoring for Kirana Stores
+KiranaVision AI — Alternative Credit Scoring for Kirana Stores
 
 <div align="center">
 
