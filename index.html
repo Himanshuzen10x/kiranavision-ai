@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KiranaVision AI — Intelligent Underwriting for Unorganized Retail</title>
+  <meta name="description" content="AI-powered underwriting system for Kirana stores using computer vision and geo-spatial analysis." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+  <div class="bg-glow bg-glow-3"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <circle cx="14" cy="14" r="13" stroke="url(#lg)" stroke-width="2"/>
+            <path d="M8 10h12M8 14h8M8 18h10" stroke="url(#lg)" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="20" cy="18" r="3" fill="url(#lg)"/>
+            <defs><linearGradient id="lg" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse"><stop stop-color="#6366f1"/><stop offset="1" stop-color="#06b6d4"/></linearGradient></defs>
+          </svg>
+        </div>
+        <span class="logo-text">KiranaVision <span class="logo-ai">AI</span></span>
+      </div>
+      <nav class="header-nav">
+        <span class="nav-badge">v2.1 Beta</span>
+        <span class="nav-status"><span class="status-dot"></span> System Online</span>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-container">
+
+    <!-- Hero -->
+    <section class="hero" id="hero-section">
+      <div class="hero-tag">🏦 Alternative Credit Scoring Engine</div>
+      <h1 class="hero-title">Underwrite Kirana Stores<br/><span class="gradient-text">Without Financial History</span></h1>
+      <p class="hero-sub">Upload shop photos and pin the location on map. Our multi-modal AI engine analyzes shelf density, SKU diversity, brand mix, neighborhood wealth, and footfall to generate a real-time credit decision.</p>
+      <div class="hero-chips">
+        <div class="chip"><span class="chip-icon">📸</span> Up to 5 Photos</div>
+        <div class="chip"><span class="chip-icon">🗺️</span> Map Picker</div>
+        <div class="chip"><span class="chip-icon">🛡️</span> Fraud Detection</div>
+        <div class="chip"><span class="chip-icon">⚡</span> Real-time</div>
+      </div>
+    </section>
+
+    <!-- Input Panel -->
+    <section class="input-panel" id="input-section">
+      <div class="panel-grid">
+
+        <!-- ── MULTI-PHOTO UPLOAD CARD ── -->
+        <div class="card" id="upload-card">
+          <div class="card-header">
+            <div class="card-icon purple">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+            </div>
+            <div style="flex:1">
+              <h3 class="card-title">Shop Photos</h3>
+              <p class="card-sub">Upload 1–5 interior shelf photographs</p>
+            </div>
+            <div class="photo-counter" id="photo-counter">
+              <span id="photo-count">0</span><span style="color:var(--text-s)">/5</span>
+            </div>
+          </div>
+
+          <!-- Drop Zone -->
+          <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
+            <div class="upload-icon">📸</div>
+            <p class="upload-label">Drop photos or click to browse</p>
+            <p class="upload-hint">JPG, PNG, WEBP • Max 10MB each • Up to 5 photos</p>
+            <input type="file" id="file-input" accept="image/*" multiple style="display:none" onchange="handleMultiImageUpload(event)" />
+          </div>
+
+          <!-- Photo Thumbnails Grid -->
+          <div class="photo-grid" id="photo-grid" style="display:none"></div>
+
+          <!-- Add More -->
+          <button class="btn-add-more" id="btn-add-more" style="display:none" onclick="document.getElementById('file-input').click()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            Add More Photos
+          </button>
+
+          <!-- EXIF Summary -->
+          <div class="exif-info" id="exif-info" style="display:none">
+            <div class="exif-row"><span>GPS from EXIF</span><span id="exif-gps" class="badge-mono">Extracting…</span></div>
+            <div class="exif-row"><span>Device</span><span id="exif-device" class="badge-mono">—</span></div>
+            <div class="exif-row"><span>Timestamp</span><span id="exif-ts" class="badge-mono">—</span></div>
+          </div>
+        </div>
+
+        <!-- ── MAP LOCATION PICKER CARD ── -->
+        <div class="card" id="geo-card">
+          <div class="card-header">
+            <div class="card-icon cyan">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div>
+              <h3 class="card-title">Select Shop Location</h3>
+              <p class="card-sub">Search or click map to pin location</p>
+            </div>
+          </div>
+
+          <!-- Location Search -->
+          <div class="map-search-wrap">
+            <div class="map-search-inner">
+              <svg class="map-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <input class="map-search-input" id="map-search-input" type="text" placeholder="Search city, area, landmark…" />
+              <button class="map-search-clear" id="map-search-clear" onclick="clearMapSearch()" style="display:none">✕</button>
+            </div>
+            <div class="map-search-results" id="map-search-results" style="display:none"></div>
+          </div>
+
+          <!-- Picker Map -->
+          <div id="picker-map" class="picker-map"></div>
+          <p class="picker-map-hint">🖱 Click map to drop pin • Drag pin to fine-tune</p>
+
+          <!-- My Location + Coord Row -->
+          <div class="coord-row">
+            <button class="btn-geo" onclick="getDeviceLocation()" id="geo-btn">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+              My Location
+            </button>
+            <div class="coord-display">
+              <span class="coord-badge" id="coord-lat-display">19.0760</span>
+              <span class="coord-sep">,</span>
+              <span class="coord-badge" id="coord-lng-display">72.8777</span>
+            </div>
+          </div>
+
+          <!-- Hidden inputs for engine -->
+          <input type="hidden" id="input-lat" value="19.0760" />
+          <input type="hidden" id="input-lng" value="72.8777" />
+          <input type="hidden" id="input-city" value="mumbai" />
+
+          <!-- Auto-Detected Location Box -->
+          <div class="geo-fetch-box" id="geo-fetch-box">
+            <div class="geo-fetch-header">
+              <span class="geo-fetch-title">📍 Auto-Detected Location</span>
+              <span class="geo-fetch-status" id="geo-fetch-status">Pin a location on map</span>
+            </div>
+            <div class="geo-location-grid" id="geo-location-grid">
+              <div class="geo-loc-item"><span class="geo-loc-label">City / Town</span><span class="geo-loc-val" id="geo-city">—</span></div>
+              <div class="geo-loc-item"><span class="geo-loc-label">District</span><span class="geo-loc-val" id="geo-district">—</span></div>
+              <div class="geo-loc-item"><span class="geo-loc-label">State</span><span class="geo-loc-val" id="geo-state">—</span></div>
+              <div class="geo-loc-item"><span class="geo-loc-label">Country</span><span class="geo-loc-val" id="geo-country">—</span></div>
+              <div class="geo-loc-item"><span class="geo-loc-label">PIN Code</span><span class="geo-loc-val" id="geo-pin">—</span></div>
+              <div class="geo-loc-item"><span class="geo-loc-label">Area Type</span><span class="geo-loc-val" id="geo-area-type">—</span></div>
+            </div>
+            <div class="overpass-stats" id="overpass-stats" style="display:none">
+              <div class="ov-stat"><span class="ov-val" id="ov-houses">—</span><span class="ov-lab">Houses (500m)</span></div>
+              <div class="ov-stat"><span class="ov-val" id="ov-shops">—</span><span class="ov-lab">Shops (500m)</span></div>
+              <div class="ov-stat"><span class="ov-val" id="ov-roads">—</span><span class="ov-lab">Road Nodes</span></div>
+              <div class="ov-stat"><span class="ov-val" id="ov-footfall">—</span><span class="ov-lab">Est. Footfall/day</span></div>
+            </div>
+            <div class="geo-fetch-loader" id="geo-fetch-loader" style="display:none">
+              <span class="spinner"></span> Fetching location data…
+            </div>
+          </div>
+
+          <!-- Store Meta -->
+          <div class="form-group">
+            <label class="form-label">Store Name</label>
+            <input class="form-input" type="text" id="input-store-name" placeholder="e.g. Sharma General Store" value="Sharma General Store" />
+          </div>
+          <div class="latlon-row">
+            <div class="form-group" style="flex:1">
+              <label class="form-label">Years in Operation</label>
+              <input class="form-input" type="number" id="input-years" placeholder="e.g. 8" value="8" min="0" max="50" />
+            </div>
+            <div class="form-group" style="flex:1">
+              <label class="form-label">Loan Requested (₹)</label>
+              <input class="form-input" type="number" id="input-loan" placeholder="e.g. 200000" value="200000" />
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Analyze Button -->
+      <div class="analyze-wrap">
+        <button class="btn-analyze" id="analyze-btn" onclick="startAnalysis()">
+          <span id="analyze-text">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            Run AI Underwriting Analysis
+          </span>
+          <span id="analyze-loading" style="display:none"><span class="spinner"></span> Analyzing…</span>
+        </button>
+        <p class="analyze-hint">Analysis typically completes in 3–8 seconds</p>
+      </div>
+    </section>
+
+    <!-- Pipeline -->
+    <section class="pipeline-section" id="pipeline-section" style="display:none">
+      <h3 class="pipeline-title">🔬 Analysis Pipeline</h3>
+      <div class="pipeline-steps" id="pipeline-steps">
+        <div class="pipeline-step" id="step-0"><div class="step-indicator idle"><span class="step-num">1</span></div><div class="step-info"><p class="step-name">Image Preprocessing &amp; Anti-Spoofing</p><p class="step-desc">Validating image authenticity and extracting visual features</p></div><div class="step-badge" id="step-badge-0">Queued</div></div>
+        <div class="pipeline-step" id="step-1"><div class="step-indicator idle"><span class="step-num">2</span></div><div class="step-info"><p class="step-name">Shelf Density &amp; SKU Analysis (CV Model)</p><p class="step-desc">Detecting objects, measuring fill ratio and product diversity</p></div><div class="step-badge" id="step-badge-1">Queued</div></div>
+        <div class="pipeline-step" id="step-2"><div class="step-indicator idle"><span class="step-num">3</span></div><div class="step-info"><p class="step-name">Brand Recognition &amp; Premium Ratio</p><p class="step-desc">Classifying branded vs. unbranded items via logo detection</p></div><div class="step-badge" id="step-badge-2">Queued</div></div>
+        <div class="pipeline-step" id="step-3"><div class="step-indicator idle"><span class="step-num">4</span></div><div class="step-info"><p class="step-name">Geo-Spatial &amp; Neighborhood Analysis</p><p class="step-desc">Querying POI density, wealth index, and footfall estimates</p></div><div class="step-badge" id="step-badge-3">Queued</div></div>
+        <div class="pipeline-step" id="step-4"><div class="step-indicator idle"><span class="step-num">5</span></div><div class="step-info"><p class="step-name">AI Credit Scoring Engine</p><p class="step-desc">Combining multi-modal features to compute credit decision</p></div><div class="step-badge" id="step-badge-4">Queued</div></div>
+        <div class="pipeline-step" id="step-5"><div class="step-indicator idle"><span class="step-num">6</span></div><div class="step-info"><p class="step-name">Fraud &amp; Consistency Validation</p><p class="step-desc">Cross-checking GPS, image authenticity, and geo-profile</p></div><div class="step-badge" id="step-badge-5">Queued</div></div>
+      </div>
+    </section>
+
+    <!-- Results -->
+    <section class="results-section" id="results-section" style="display:none">
+      <div class="decision-banner" id="decision-banner">
+        <div class="decision-icon" id="decision-icon">✓</div>
+        <div class="decision-content">
+          <h2 class="decision-title" id="decision-title">LOAN APPROVED</h2>
+          <p class="decision-sub" id="decision-sub">High confidence — Strong visual and geo-economic indicators</p>
+        </div>
+        <div class="decision-meta">
+          <div class="decision-score"><span class="score-label">Credit Score</span><span class="score-val" id="credit-score-display">—</span></div>
+          <div class="decision-loan"><span class="score-label">Approved Limit</span><span class="score-val" id="loan-limit-display">—</span></div>
+        </div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi-card"><div class="kpi-icon">📦</div><div class="kpi-label">Shelf Density Index</div><div class="kpi-value" id="kpi-sdi-val">—</div><div class="kpi-bar"><div class="kpi-fill" id="kpi-sdi-fill" style="width:0%"></div></div><div class="kpi-sub" id="kpi-sdi-sub">—</div></div>
+        <div class="kpi-card"><div class="kpi-icon">🏷️</div><div class="kpi-label">Premium Brand Ratio</div><div class="kpi-value" id="kpi-pbr-val">—</div><div class="kpi-bar"><div class="kpi-fill" id="kpi-pbr-fill" style="width:0%"></div></div><div class="kpi-sub" id="kpi-pbr-sub">—</div></div>
+        <div class="kpi-card"><div class="kpi-icon">🔢</div><div class="kpi-label">SKU Diversity Score</div><div class="kpi-value" id="kpi-sku-val">—</div><div class="kpi-bar"><div class="kpi-fill" id="kpi-sku-fill" style="width:0%"></div></div><div class="kpi-sub" id="kpi-sku-sub">—</div></div>
+        <div class="kpi-card"><div class="kpi-icon">📍</div><div class="kpi-label">Geo Footfall Score</div><div class="kpi-value" id="kpi-geo-val">—</div><div class="kpi-bar"><div class="kpi-fill" id="kpi-geo-fill" style="width:0%"></div></div><div class="kpi-sub" id="kpi-geo-sub">—</div></div>
+        <div class="kpi-card"><div class="kpi-icon">🏘️</div><div class="kpi-label">Neighborhood Wealth</div><div class="kpi-value" id="kpi-wealth-val">—</div><div class="kpi-bar"><div class="kpi-fill" id="kpi-wealth-fill" style="width:0%"></div></div><div class="kpi-sub" id="kpi-wealth-sub">—</div></div>
+        <div class="kpi-card"><div class="kpi-icon">📈</div><div class="kpi-label">Business Stability</div><div class="kpi-value" id="kpi-stability-val">—</div><div class="kpi-bar"><div class="kpi-fill" id="kpi-stability-fill" style="width:0%"></div></div><div class="kpi-sub" id="kpi-stability-sub">—</div></div>
+      </div>
+
+      <div class="details-grid">
+        <!-- CV Analysis -->
+        <div class="detail-card">
+          <h4 class="detail-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35M11 8v6M8 11h6"/></svg> Computer Vision Analysis</h4>
+          <div class="cv-table">
+            <div class="cv-row header-row"><span>Metric</span><span>Value</span><span>Signal</span></div>
+            <div class="cv-row"><span>Photos Analysed</span><span id="cv-photos">—</span><span class="signal" id="cv-photos-sig">—</span></div>
+            <div class="cv-row"><span>Shelf Fill Ratio</span><span id="cv-fill">—</span><span class="signal" id="cv-fill-sig">—</span></div>
+            <div class="cv-row"><span>Objects Detected</span><span id="cv-obj">—</span><span class="signal" id="cv-obj-sig">—</span></div>
+            <div class="cv-row"><span>Branded SKUs</span><span id="cv-brand">—</span><span class="signal" id="cv-brand-sig">—</span></div>
+            <div class="cv-row"><span>Unbranded SKUs</span><span id="cv-unbrand">—</span><span class="signal" id="cv-unbrand-sig">—</span></div>
+            <div class="cv-row"><span>Category Diversity</span><span id="cv-cat">—</span><span class="signal" id="cv-cat-sig">—</span></div>
+            <div class="cv-row"><span>Lighting Quality</span><span id="cv-light">—</span><span class="signal" id="cv-light-sig">—</span></div>
+            <div class="cv-row"><span>Image Authenticity</span><span id="cv-auth">—</span><span class="signal" id="cv-auth-sig">—</span></div>
+          </div>
+          <div class="detected-brands" id="detected-brands-wrap">
+            <p class="sub-label">Detected Brands</p>
+            <div class="brand-chips" id="detected-brands"></div>
+          </div>
+        </div>
+
+        <!-- Geo Analysis -->
+        <div class="detail-card">
+          <h4 class="detail-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Geo-Spatial Analysis</h4>
+          <div id="leaflet-map" style="height:200px;border-radius:10px;margin-bottom:14px;border:1px solid rgba(6,182,212,0.2);overflow:hidden;"></div>
+          <p class="map-coord" id="map-coord-text" style="text-align:center;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--cyan);margin-bottom:12px;">—</p>
+          <div class="poi-list" id="poi-list">
+            <p class="sub-label">Nearby Points of Interest (500m radius)</p>
+            <div id="poi-items"></div>
+          </div>
+          <div class="geo-stats" id="geo-stats">
+            <div class="geo-stat"><span class="geo-stat-val" id="gs-pop">—</span><span class="geo-stat-lab">Est. Pop Density</span></div>
+            <div class="geo-stat"><span class="geo-stat-val" id="gs-income">—</span><span class="geo-stat-lab">Area Avg Income</span></div>
+            <div class="geo-stat"><span class="geo-stat-val" id="gs-comp">—</span><span class="geo-stat-lab">Competitor Stores</span></div>
+          </div>
+        </div>
+
+        <!-- Fraud Detection -->
+        <div class="detail-card">
+          <h4 class="detail-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Fraud Detection &amp; Validation</h4>
+          <div class="fraud-list" id="fraud-list"></div>
+          <div class="fraud-score-wrap">
+            <p class="sub-label">Overall Trust Score</p>
+            <div class="trust-meter" id="trust-meter"><div class="trust-fill" id="trust-fill"></div><span class="trust-val" id="trust-val">—</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Income Estimate -->
+      <div class="income-section">
+        <div class="income-card">
+          <div class="income-icon">💰</div>
+          <div class="income-info"><p class="income-label">Estimated Monthly Revenue</p><p class="income-range" id="income-range">—</p></div>
+          <div class="income-divider"></div>
+          <div class="income-info"><p class="income-label">Estimated Monthly Net Income</p><p class="income-range" id="net-income-range">—</p></div>
+          <div class="income-divider"></div>
+          <div class="income-info"><p class="income-label">Risk Category</p><p class="income-range" id="risk-category">—</p></div>
+        </div>
+      </div>
+
+      <!-- JSON Report -->
+      <div class="json-section">
+        <div class="json-header">
+          <h4 class="detail-title" style="margin:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg> Structured JSON Report</h4>
+          <button class="btn-copy" id="copy-json-btn" onclick="copyJson()">📋 Copy JSON</button>
+        </div>
+        <pre class="json-block" id="json-block"></pre>
+      </div>
+
+      <div class="action-row">
+        <button class="btn-action btn-primary" onclick="downloadReport()">⬇ Download Full Report</button>
+        <button class="btn-action btn-secondary" onclick="resetApp()">🔄 New Analysis</button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p>KiranaVision AI — Alternative Credit Scoring for Bharat's Unorganized Retail</p>
+    <p class="footer-sub">⚠️ Prototype system. Outputs are AI-estimated and require human review before lending decisions.</p>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="engine.js"></script>
+</body>
+</html>
