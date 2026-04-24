@@ -11,7 +11,8 @@
 
 **AI-powered underwriting system for unorganized retail (Kirana stores) — no traditional financial data needed.**
 
-[🚀 Live Demo](#) • [📖 How It Works](#how-it-works) • [🛠 Features](#features)
+[🚀 Live Demo](https://himanshuzen10x.github.io/kiranavision-ai/) • [📖 How It Works](#how-it-works) • [🛠 Features](#features)
+
 
 </div>
 
