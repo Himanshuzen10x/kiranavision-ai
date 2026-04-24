@@ -1,4 +1,4 @@
-# KiranaVision AI — Alternative Credit Scoring for Kirana Stores
+<img width="1299" height="665" alt="Screenshot 2026-04-24 at 7 31 01 PM" src="https://github.com/user-attachments/assets/6930632b-52c3-4d7d-8858-6c06c6b58dce" /># KiranaVision AI — Alternative Credit Scoring for Kirana Stores
 
 <div align="center">
 
@@ -154,6 +154,16 @@ kiranavision-ai/
 ## 📸 Screenshots
 
 > *Add screenshots here after deployment*
+> <img width="1299" height="665" alt="Screenshot 2026-04-24 at 7 30 42 PM" src="https://github.com/user-attachments/assets/4321b03f-e9f7-452c-b5ab-d8196072300d" />
+<img width="1299" height="665" alt="Screenshot 2026-04-24 at 7 31 01 PM" src="https://github.com/user-attachments/assets/040ff7d7-e4ba-4a55-8803-177a361180e5" />
+<img width="1299" height="665" alt="Screenshot 2026-04-24 at 7 31 20 PM" src="https://github.com/user-attachments/assets/c13f4538-8e2f-4b32-8186-25a767348a41" />
+<img width="1299" height="665" alt="Screenshot 2026-04-24 at 7 31 34 PM" src="https://github.com/user-attachments/assets/cc02a5be-d2c2-436a-a006-83de85d02781" />
+<img width="1299" height="333" alt="Screenshot 2026-04-24 at 7 32 18 PM" src="https://github.com/user-attachments/assets/188e4fe0-069c-47bb-a26d-d2f9c7e5cce8" />
+
+
+
+
+
 
 ---
 
@@ -165,7 +175,7 @@ This is a **prototype system**. All CV scores are AI-estimated simulations. Outp
 
 ## 📄 License
 
-MIT License — free to use, modify, and distribute.
+License — free to use, modify, and distribute.
 
 ---
 
